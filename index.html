@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material Decoder</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header class="site-header">
+
+    <div class="topbar">
+      <!-- Clickable logo = Home -->
+      <a href="index.html" class="logo" id="logoLink">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">Material Decoder</span>
+      </a>
+
+      <!-- Compact αναζήτηση: εμφανίζεται όταν γίνεται scroll ή όταν είσαι σε Newsfeed / Stories / Brands -->
+      <div class="compact-search" id="compactSearch">
+        <input
+          type="text"
+          id="compactInput"
+          placeholder="Αναζήτηση προϊόντος..."
+          autocomplete="off"
+        >
+        <button id="compactBtn" aria-label="Αναζήτηση">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Οριζόντιο μενού (tabs) -->
+    <nav class="tabs">
+      <a href="#" class="tab" data-view="news" id="newsTab">Newsfeed</a>
+      <a href="#" class="tab" data-view="brands" id="brandsTab">Brands</a>
+      <a href="#" class="tab" data-view="soon">Events</a>
+      <a href="#" class="tab" data-view="stories" id="storiesTab">Stories</a>
+      <a href="#" class="tab" data-view="soon">Talks</a>
+    </nav>
+
+  </header>
+
+  <main class="page">
+
+    <!-- Hero: μεγάλη μπάρα αναζήτησης -->
+    <section class="hero" id="hero">
+      <h1>Αποκωδικοποίησε κάθε υλικό</h1>
+      <p>Βρες τη σύσταση και τη λειτουργία ενός εμπορικού κατασκευαστικού προϊόντος.</p>
+
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Αναζήτηση εμπορικού προϊόντος..."
+          autocomplete="off"
+        >
+        <button id="searchBtn">Αναζήτηση</button>
+        <!-- AUTOCOMPLETE: η νέα γραμμή -->
+  <ul id="autocompleteList" class="autocomplete-list" role="listbox" hidden></ul>
+      </div>
+
+      <p id="message" class="message"></p>
+    </section>
+
+    <!-- Υλικό της Εβδομάδας (κρυμμένο μέχρι να φορτώσει το CSV) -->
+    <section id="featuredCard" class="featured-card" hidden>
+      <span class="featured-label">⭐ Υλικό της Εβδομάδας</span>
+
+      <h2 id="featuredName" class="featured-name"></h2>
+      <span class="featured-badge" id="featuredCategory"></span>
+
+      <p id="featuredDescription" class="featured-description"></p>
+
+      <button id="featuredBtn" class="featured-btn">
+        Δες την πλήρη ανάλυση <span aria-hidden="true">→</span>
+      </button>
+    </section>
+
+    <!-- Κάρτα αποτελεσμάτων (κρυμμένη μέχρι να γίνει αναζήτηση) -->
+    <article id="resultCard" class="result-card" hidden>
+
+      <div class="card-header">
+        <!-- Τίτλος αριστερά, τιμή τέρμα δεξιά, στην ίδια ευθεία -->
+        <div class="card-title-row">
+          <h2 id="cardName"></h2>
+          <span class="price-badge" id="cardPriceBadge" hidden>
+            <span aria-hidden="true">🏷️</span>
+            <span id="cardPrice"></span>
+          </span>
+        </div>
+
+        <span class="badge" id="cardCategory"></span>
+      </div>
+
+      <div class="cards-grid">
+
+        <!-- Γραμμή 1 -->
+        <section class="result-section section-ingredients">
+          <h3>🧪 Ενεργά Συστατικά</h3>
+          <p id="cardIngredients"></p>
+        </section>
+
+        <section class="result-section section-warning">
+          <h3>⚠️ Χημικές Ασυμβατότητες</h3>
+          <p id="cardIncompatibilities"></p>
+        </section>
+
+        <!-- Γραμμή 2 -->
+        <section class="result-section section-technical">
+          <h3>🔬 Τεχνικός Μηχανισμός</h3>
+          <p id="cardMechanism"></p>
+        </section>
+
+        <section class="result-section section-applications">
+          <h3><span class="icon-chip">🎯</span> Βέλτιστη Εφαρμογή</h3>
+          <p id="cardApplications"></p>
+        </section>
+
+        <!-- Γραμμή 3 (full width): τίτλος + dropdown στην ίδια γραμμή -->
+        <section class="result-section section-personal">
+          <div class="personal-head">
+            <h3>✨ Προσωποποιημένο Info</h3>
+
+            <div class="learn-select">
+              <label for="interestSelect">Μαθαίνω καλύτερα μέσω:</label>
+              <select id="interestSelect"></select>
+            </div>
+          </div>
+
+          <p class="personal-text" id="personalText"></p>
+        </section>
+
+      </div>
+    </article>
+
+    <!-- Μήνυμα όταν το υλικό δεν βρίσκεται στη βάση -->
+    <section id="notFoundBox" class="not-found" hidden>
+      <div class="not-found-icon">🔍</div>
+      <h3>Το υλικό δεν βρέθηκε στη βάση</h3>
+      <p>Έλεγξε την ορθογραφία ή δοκίμασε άλλο όνομα προϊόντος.</p>
+    </section>
+
+    <!-- Newsfeed (κρυμμένο μέχρι να πατηθεί το tab Newsfeed) -->
+    <section id="newsSection" class="news-section" hidden>
+      <header class="news-header">
+        <h2>📰 Newsfeed</h2>
+        <p>Τα τελευταία νέα από τον χώρο των κατασκευαστικών υλικών.</p>
+      </header>
+
+      <div id="newsList" class="news-grid"></div>
+    </section>
+
+    <!-- Stories (κρυμμένο μέχρι να πατηθεί το tab Stories) -->
+    <section id="storiesSection" class="news-section" hidden>
+      <header class="news-header">
+        <h2>📚 Stories</h2>
+        <p>Case studies από το πεδίο: τι πήγε στραβά, γιατί, και πώς διορθώθηκε.</p>
+      </header>
+
+      <div id="storiesList" class="stories-list"></div>
+    </section>
+
+    <!-- Brands (κρυμμένο μέχρι να πατηθεί το tab Brands) -->
+    <section id="brandsSection" class="news-section" hidden>
+
+      <!-- Προβολή 1: λίστα εταιρειών με φίλτρα -->
+      <div id="brandsListView">
+        <header class="news-header">
+          <h2>🏢 Brands</h2>
+          <p>Οι κατασκευαστές των υλικών, με προφίλ, επικοινωνία και προϊόντα.</p>
+        </header>
+
+        <div class="brands-toolbar">
+          <div class="brands-filter">
+            <label for="brandOrigin">Χώρα</label>
+            <select id="brandOrigin"></select>
+          </div>
+
+          <button type="button" id="brandSortBtn" class="brands-sort-btn" aria-label="Αλφαβητική ταξινόμηση">
+            A → Z
+          </button>
+
+          <div class="brands-search">
+            <input
+              type="text"
+              id="brandSearch"
+              placeholder="Αναζήτηση εταιρείας..."
+              autocomplete="off"
+            >
+          </div>
+        </div>
+
+        <p id="brandsCount" class="brands-count"></p>
+
+        <div id="brandsGrid" class="brands-grid"></div>
+      </div>
+
+      <!-- Προβολή 2: αναλυτική σελίδα εταιρείας -->
+      <div id="brandDetailView" hidden>
+        <button type="button" id="brandBackBtn" class="back-btn">← Όλες οι εταιρείες</button>
+
+        <article class="brand-detail-card">
+          <div class="brand-detail-badges">
+            <span class="brand-origin-badge" id="brandDetailOrigin"></span>
+            <span class="brand-category-badge" id="brandDetailCategory"></span>
+          </div>
+
+          <h2 class="brand-detail-name" id="brandDetailName"></h2>
+          <p class="brand-detail-profile" id="brandDetailProfile"></p>
+
+          <div class="brand-actions">
+            <a id="brandWebsiteBtn" class="brand-action-btn is-primary" href="#" target="_blank" rel="noopener noreferrer">
+              🌐 Επίσκεψη Website
+            </a>
+            <a id="brandSupportBtn" class="brand-action-btn" href="#">
+              📞 Τεχνική Υποστήριξη
+            </a>
+          </div>
+        </article>
+
+        <section class="brand-products">
+          <h3 class="brand-products-title">Προϊόντα της Εταιρείας</h3>
+          <div id="brandProducts" class="products-grid"></div>
+        </section>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Modal ειδήσεων (κρυμμένο μέχρι να πατηθεί "Διαβάστε περισσότερα") -->
+  <div id="newsModal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+      <button id="modalClose" class="modal-close" aria-label="Κλείσιμο">&times;</button>
+
+      <span class="modal-date" id="modalDate"></span>
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <p class="modal-summary" id="modalSummary"></p>
+
+      <a id="modalSourceBtn" class="modal-source-btn" href="#" target="_blank" rel="noopener noreferrer">
+        Διαβάστε ολόκληρο το άρθρο στην πηγή <span aria-hidden="true">↗</span>
+      </a>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
